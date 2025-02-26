@@ -1,0 +1,5 @@
+essentia==2.1b6.dev1110
+pydub==0.25.1
+ffmpeg==1.4
+ffprobe==0.5
+numpy==1.26.4
