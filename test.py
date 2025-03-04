@@ -1,14 +1,15 @@
-from audio_length.lambda_function import get_audio_length
+
+# from audio_length.lambda_function import get_audio_length
 from audio_energy.lambda_function import compute_average_energy
 from status_check.lambda_function import get_current_time_utc
-from audio_metadata.lambda_function import get_metadata
-from audio_time_stretch.lambda_function import time_stretch
-from audio_pitch_shift.lambda_function import pitch_shift
+# from audio_metadata.lambda_function import get_metadata
+# from audio_time_stretch.lambda_function import time_stretch
+# from audio_pitch_shift.lambda_function import pitch_shift
 from audio_genre.lambda_function import get_genres
 
 
-from pydub.playback import play
-from pydub import AudioSegment
+# from pydub.playback import play
+# from pydub import AudioSegment
 import io
 
 file = '9353__guitarz1970__tinsing-1 copy.mp3'
@@ -52,6 +53,7 @@ print(curr_time)
 # song = AudioSegment.from_file(bytes, format="mp3")
 # play(song)
 
-
-embeddings = get_genres(audio, 1)
-print(embeddings)
+# print(dir(essentia.standard))
+predictions = get_genres(audio)
+for k,v in predictions.items():
+    print(f'{k}: {v}')

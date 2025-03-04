@@ -172,4 +172,5 @@ cython_debug/
 
 audio_length/audio_length_dependencies 12-20-57-707
 audio_length/audio_length_dependencies.zip 12-20-50-030.zip
-.venv
+.venv310
+music_files/
