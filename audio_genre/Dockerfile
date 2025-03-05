@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM public.ecr.aws/lambda/python:3.10
 
 # Custom binaries for ffmepg and ffprobe
 # Set the working directory inside the container

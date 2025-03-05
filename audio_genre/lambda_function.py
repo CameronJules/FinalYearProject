@@ -15,6 +15,8 @@ This may also require a new python version
 
 Using a new venv for this environment, need to adjust the python version such that the newer version of essentia can be
 found when using lambda
+
+CD into folder before runnning test?
 '''
 
 # python3.10 -m venv .venv310
@@ -47,10 +49,10 @@ def get_genres(audio_bytes):
     os.remove(temp_audio_file.name)
 
         
-    embedding_model = es.TensorflowPredictEffnetDiscogs(graphFilename="audio_genre/discogs-effnet-bs64-1.pb", output="PartitionedCall:1")
+    embedding_model = es.TensorflowPredictEffnetDiscogs(graphFilename="discogs-effnet-bs64-1.pb", output="PartitionedCall:1")
     embeddings = embedding_model(audio)
 
-    model = es.TensorflowPredict2D(graphFilename="audio_genre/genre_discogs400-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
+    model = es.TensorflowPredict2D(graphFilename="genre_discogs400-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
     activations = model(embeddings)
 
     # Why do we use mean
@@ -62,6 +64,54 @@ def get_genres(audio_bytes):
     return out
 
 
-def process_genres(predictions):
-    pass
+def process_genres(predictions, n):
+    output = dict(sorted(predictions.items(), key=lambda item: item[1], reverse=True)[:n])
+
+    return output
+
+def lambda_handler(event, context):
+    try:
+        # Check structure
+        if "body" not in event:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Missing body in request"})
+            }
+        
+        # Check encoding
+        is_base64 = event.get("isBase64Encoded", False)
+        if not is_base64:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"error": "Audio file must be in base64 encoding"})
+            }
+    
+        # Main function code
+        try:
+            # Decode body
+            binary_data = base64.b64decode(event["body"])
+            # Run duration function
+            full_output = get_genres(binary_data)
+            final_output = process_genres(full_output)
+
+            return {
+                "statusCode": 200,
+                "body": json.dumps(final_output)
+            }
+        # Handle exception from main function
+        except Exception as e:
+            print("Error:", str(e))
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"error, decoding or duration function failed": str(e)})
+            }
+
+    # Catch any other exceptions
+    except Exception as e:
+        print("Error:", str(e))
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
+
 
