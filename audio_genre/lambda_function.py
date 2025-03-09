@@ -65,6 +65,7 @@ def get_genres(audio_bytes):
 
 
 def process_genres(predictions, n):
+    '''Return top n outputs from the function'''
     output = dict(sorted(predictions.items(), key=lambda item: item[1], reverse=True)[:n])
 
     return output
