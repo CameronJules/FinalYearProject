@@ -53,35 +53,49 @@ def compute_average_energy(audio_bytes) -> float:
 
     return average_energy
 
+
 def lambda_handler(event, context):
-    is_base64 = event.get("isBase64Encoded", False)
-
-    # Check structure
-    if "body" not in event:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Missing body in request"})
-        }
-    
-
-    # Decode if necessary
-    if is_base64:
-        binary_data = base64.b64decode(event["body"])
-    else:
-        # TODO: What is latin1: 
-        binary_data = event["body"].encode("latin1")  # Raw binary data
-
     try:
-        energy = compute_average_energy(binary_data)
+        # Check structure
+        if "body" not in event:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Missing body in request"})
+            }
+        
+        # Check encoding
+        is_base64 = event.get("isBase64Encoded", False)
+        if not is_base64:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"error": "Audio file must be in base64 encoding"})
+            }
+    
+        # Main function code
+        try:
+            # Decode body
+            binary_data = base64.b64decode(event["body"])
+            # Run duration function
+            energy = compute_average_energy(binary_data)
+
+            return {
+                "statusCode": 200,
+                "body": json.dumps({'audio file average energy': energy})
+            }
+        # Handle exception from main function
+        except Exception as e:
+            print("Error:", str(e))
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"error, decoding or duration function failed": str(e)})
+            }
+
+    # Catch any other exceptions
     except Exception as e:
+        print("Error:", str(e))
         return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Invalid audio data.", "details": str(e)}),
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
         }
 
 
-
-    return {
-        'statusCode': 200,
-        'body' : json.dumps({'audio file average energy': energy})
-    }

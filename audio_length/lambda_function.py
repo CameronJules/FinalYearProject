@@ -21,7 +21,8 @@ def lambda_handler(event, context):
             }
         
         # Check encoding
-        is_base64 = event.get("isBase64Encoded", False)
+        headers = event.get("headers")
+        is_base64 = headers.get("isBase64Encoded", False )
         if not is_base64:
             return {
                 "statusCode": 422,

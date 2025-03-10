@@ -16,7 +16,7 @@ payload = {
 }
 
 # Save to a JSON file
-with open("./test_length_payload.json", "w") as json_file:
+with open("./test_payload.json", "w") as json_file:
     json.dump(payload, json_file, indent=4)
 
-print("Base64-encoded JSON payload saved as test_length_payload.json")
+print("Base64-encoded JSON payload saved as test_payload.json")

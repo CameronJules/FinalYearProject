@@ -30,3 +30,51 @@ def get_metadata(audio_bytes):
     os.remove(temp_audio_file.name)
 
     return metadata
+
+
+
+def lambda_handler(event, context):
+    try:
+        # Check structure
+        if "body" not in event:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Missing body in request"})
+            }
+        
+        # Check encoding
+        is_base64 = event.get("isBase64Encoded", False)
+        if not is_base64:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"error": "Audio file must be in base64 encoding"})
+            }
+    
+        # Main function code
+        try:
+            # Decode body
+            binary_data = base64.b64decode(event["body"])
+            # Run duration function
+            metadata = get_metadata(binary_data)
+
+            return {
+                "statusCode": 200,
+                "body": json.dumps({"Audio file metadata": metadata})
+            }
+        # Handle exception from main function
+        except Exception as e:
+            print("Error:", str(e))
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"error, decoding or duration function failed": str(e)})
+            }
+
+    # Catch any other exceptions
+    except Exception as e:
+        print("Error:", str(e))
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
+
+
