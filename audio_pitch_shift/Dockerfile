@@ -17,7 +17,6 @@ ENV NUMBA_CACHE_DIR="/tmp"
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
 # Install the specified packages
-RUN yum install -y libsndfile
 RUN pip install -r requirements.txt
 
 # Copy function code

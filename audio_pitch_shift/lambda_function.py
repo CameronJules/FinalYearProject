@@ -1,12 +1,7 @@
 from json import dumps as json_dumps
-from librosa import load as libr_load
-from librosa.effects import pitch_shift as lib_pitch_shift
 from pydub import AudioSegment
 from io import BytesIO
-from soundfile import write as sf_write
-from soundfile import read as sf_read
 from base64 import b64decode, b64encode
-from numpy import int16
 from time import strftime, gmtime
 
 def log(message,type):
@@ -15,43 +10,27 @@ def log(message,type):
 
 def pitch_shift(audio_bytes, shift_amount):
     '''
-    shift amount is validated outside of the function to enable call back from api -> look into if this is correct way
-    Shift the pitch of an audio file by a specified shift_amount/rate
-    defualt is 12 bins per octave
+    shift amount in ocatves
+    https://batulaiko.medium.com/how-to-pitch-shift-in-python-c59b53a84b6d
     '''
-    log("pitch_shift: Setting up audio data", "INFO")
-    # https://python-soundfile.readthedocs.io/en/0.13.1/
+    log("pitch_shift: Writing audio to buffer", "INFO")
     audio_buffer = BytesIO(audio_bytes)
     audio = AudioSegment.from_file(audio_buffer, format="mp3")
-    frame_rate = audio.frame_rate
 
-    wav_buffer = BytesIO()
-    audio.export(wav_buffer, format="wav")
-    wav_buffer.seek(0)
+    log("pitch_shift: Adjusting sample rate", "INFO")
+    new_sample_rate = int(audio.frame_rate * (2.0 ** shift_amount))
 
-    log("pitch_shift: Loading audio into Librosa", "INFO")
-    # https://librosa.org/blog/2019/07/17/resample-on-load/
-    audio_array, sample_rate = libr_load(wav_buffer, sr=None)
+    log("pitch_shift: Applying audio shift", "INFO")
+    pitch_shifted_sound = audio._spawn(audio.raw_data, overrides={'frame_rate': new_sample_rate})
+    pitch_shifted_sound = pitch_shifted_sound.set_frame_rate(44100)
 
-    log("pitch_shift: Running librosa pitch function", "INFO")
-    librosa_audio = lib_pitch_shift(audio_array, sr=frame_rate, n_steps=shift_amount)
-    
-    log("pitch_shift: Creating output", "INFO")
-    # https://stackoverflow.com/questions/13039846/what-do-the-bytes-in-a-wav-file-represent
-    librosa_audio_16bit = (librosa_audio * 32767).astype(int16) # scaling to wav range
-    wav_buffer = BytesIO()
-    sf_write(wav_buffer, librosa_audio_16bit, frame_rate, format='wav')
-    wav_buffer.seek(0)
-    # Convert WAV buffer to MP3
-    audio = AudioSegment.from_file(wav_buffer, format="wav")
+    log("pitch_shift: Writing output", "INFO")
     mp3_buffer = BytesIO()
-    audio.export(mp3_buffer, format="mp3", bitrate="192k")
+    pitch_shifted_sound.export(mp3_buffer, format="mp3")
     mp3_bytes = mp3_buffer.getvalue()
-    
-    wav_buffer.close()
     mp3_buffer.close()
-
-    log("Done\n","INFO")
+    
+    log("Success\n", "INFO")
     return mp3_bytes
 
 
@@ -101,6 +80,7 @@ def lambda_handler(event, context):
         # Run duration function
         log("lambda_handler: Running pitch shift", "INFO")
         try:
+            shift_amount = float(shift_amount)
             altered_audio = pitch_shift(binary_data,shift_amount)
         except Exception as e:
             log(f"lambda_handler: Pitch function failed: {str(e)}", "ERROR")
