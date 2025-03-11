@@ -55,7 +55,7 @@ print(curr_time)
 
 # --- Audio Pitch Shift ---
 print(audio[:10])
-bytes = pitch_shift(audio, 8)
+bytes = pitch_shift(audio, 1)
 bytes = io.BytesIO(bytes)
 song = AudioSegment.from_file(bytes)
 play(song)

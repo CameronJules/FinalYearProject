@@ -18,7 +18,6 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
 # Install the specified packages
 RUN yum install -y libsndfile
-RUN pip install librosa==0.10.2.post1 -U
 RUN pip install -r requirements.txt
 
 # Copy function code
