@@ -63,7 +63,7 @@ RUN pip install -r requirements.txt
 
 
 # Set runtime interface client as default command for the container runtime
-ENTRYPOINT [ "/usr/bin/python3, "-m", "awslambdaric" ]
+ENTRYPOINT [ "/usr/bin/python3", "-m", "awslambdaric" ]
 # Pass the name of the function handler as an argument to the runtime
 CMD [ "lambda_function.handler" ]
 # Define custom function directory

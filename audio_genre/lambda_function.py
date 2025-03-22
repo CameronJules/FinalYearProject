@@ -23,7 +23,7 @@ CD into folder before runnning test?
 # source .venv310/bin/activate  
 
 # pip install essentia==2.1b6.dev1177
-# python -c "import essentia; print(essentia.__version__)" 
+
 
 labels = labels = [
     "Blues---Boogie Woogie",
@@ -490,7 +490,7 @@ def handler(event, context):
             }
     
         # Main function code
-        # Need to handle param for process genre temp set to 5
+        # Need to handle param for process genre temp set to
         try:
             # Decode body
             binary_data = base64.b64decode(event["body"])
