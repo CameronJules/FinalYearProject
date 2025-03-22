@@ -542,6 +542,25 @@ def handler(event, context):
                 "statusCode": 422,
                 "body": json.dumps({"error": "Audio file must be in base64 encoding"})
             }
+        parameters = event.get("queryStringParameters", False)
+        if not parameters:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"client error": "Missing query parameters - queryStringParameters: params_dict"})
+            }
+        top_n = parameters.get("top_n", False) 
+        if not top_n:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"client error": "Missing query parameters (top_n)"})
+            }
+        try:
+            top_n = int(top_n)
+        except Exception as e:
+            return {
+                "statusCode": 422,
+                "body": json.dumps({"client error": "top_n parameter is not a string"})
+            }
     
         # Main function code
         try:
@@ -549,7 +568,7 @@ def handler(event, context):
             binary_data = base64.b64decode(event["body"])
             # Run duration function
             full_output = get_instruments(binary_data)
-            final_output = process_instruments(full_output,5)
+            final_output = process_instruments(full_output,top_n)
 
             return {
                 "statusCode": 200,
