@@ -11,7 +11,7 @@ RUN chmod -R +x /var/task/custom_bins
 # Add the custom_bins folder to the PATH environment variable
 ENV PATH="/var/task/custom_bins:$PATH"
 
-ENV NUMBA_CACHE_DIR="/tmp"
+# ENV NUMBA_CACHE_DIR="/tmp"
 
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
