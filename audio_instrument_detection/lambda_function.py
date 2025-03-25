@@ -148,7 +148,7 @@ def get_genres(audio_bytes):
     embedding_model = es.TensorflowPredictEffnetDiscogs(graphFilename="discogs-effnet-bs64-1.pb", output="PartitionedCall:1")
     embeddings = embedding_model(audio)
 
-    model = es.TensorflowPredict2D(graphFilename="genre_discogs400-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
+    model = es.TensorflowPredict2D(graphFilename="mtg_jamendo_instrument-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
     activations = model(embeddings)
 
     # Why do we use mean
