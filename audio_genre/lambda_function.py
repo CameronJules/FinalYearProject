@@ -430,6 +430,9 @@ labels = labels = [
 
 def get_genres(audio_bytes):
     '''Return the top n genres for a given audio'''
+    assert audio_bytes, "audio_bytes must not be empty"
+    assert isinstance(audio_bytes, bytes), "audio_bytes must be of type bytes"
+
     # Create mp3 audio
     audio_bytes = io.BytesIO(audio_bytes)
     audio = AudioSegment.from_file(audio_bytes, format="mp3")
@@ -465,6 +468,7 @@ def get_genres(audio_bytes):
 
 def process_genres(predictions, n):
     '''Return top n outputs from the function'''
+    assert n < len(predictions), 'N must be less than the number of predictions'
     output = dict(sorted(predictions.items(), key=lambda item: item[1], reverse=True)[:n])
 
     return output
