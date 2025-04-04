@@ -69,23 +69,23 @@ print(curr_time)
 
 
 # --- Audio Pitch Shift ---
-print(audio[:10])
-bytes = pitch_shift(audio, 1)
-bytes = io.BytesIO(bytes)
-song = AudioSegment.from_file(bytes, format='mp3')
-play(song)
+# print(audio[:10])
+# bytes = pitch_shift(audio, 1)
+# bytes = io.BytesIO(bytes)
+# song = AudioSegment.from_file(bytes, format='mp3')
+# play(song)
 
 # print(dir(essentia.standard))
 
 
 # --- Audio Genres ---
-# predictions = get_genres(audio)
-# # for k,v in predictions.items():
-# #     print(f'{k}: {v}')
-
-# out = process_genres(predictions, 5)
-# for k,v in out.items():
+predictions = get_genres(audio)
+# for k,v in predictions.items():
 #     print(f'{k}: {v}')
+
+out = process_genres(predictions, 5)
+for k,v in out.items():
+    print(f'{k}: {v}')
 
 
 # ---  Audio Instrument Detection ---

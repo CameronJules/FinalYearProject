@@ -28,21 +28,22 @@ def compute_average_energy(audio_bytes) -> float:
     variable which will be binary so we create a temp file to allow read.
 
     '''
+    assert audio_bytes, "audio_bytes must not be empty"
+    assert isinstance(audio_bytes, bytes), "audio_bytes must be of type bytes"
+
     # Create mp3 audio
     audio_bytes = io.BytesIO(audio_bytes)
     audio = AudioSegment.from_file(audio_bytes, format="mp3")
     # Use temp file to get around essentia disk only read
-    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-    audio.export(temp_audio_file.name, format="mp3")
-    # store temp file name
-    temp_file_path = temp_audio_file.name
-    temp_audio_file.close()
+    with tempfile.NamedTemporaryFile(delete=True, suffix=".mp3") as temp_audio_file:
+        audio.export(temp_audio_file.name, format="mp3")
+        # store temp file name
+        temp_file_path = temp_audio_file.name
+ 
+        # load the audio
+        loader = es.MonoLoader(filename=temp_file_path)
+        audio = loader()
 
-    # load the audio
-    loader = es.MonoLoader(filename=temp_file_path)
-    audio = loader()
-    # remove the temp file
-    os.remove(temp_audio_file.name)
 
     # Compute the energy of each frame in the audio
     energy_calculator = es.Energy()
@@ -63,7 +64,7 @@ def lambda_handler(event, context):
                 "body": json.dumps({"error": "Missing body in request"})
             }
         
-        # Check encoding
+        # Check encoding flag
         is_base64 = event.get("isBase64Encoded", False)
         if not is_base64:
             return {
