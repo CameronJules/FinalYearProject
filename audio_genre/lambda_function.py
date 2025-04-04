@@ -457,12 +457,9 @@ def get_genres(audio_bytes):
     model = es.TensorflowPredict2D(graphFilename="genre_discogs400-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
     activations = model(embeddings)
 
-    # Why do we use mean
     activations_mean = np.mean(activations, axis=0)
 
-
     out = dict(zip(labels, activations_mean.tolist()))
-
     return out
 
 
@@ -510,7 +507,6 @@ def handler(event, context):
             }
     
         # Main function code
-        # Need to handle param for process genre temp set to
         try:
             # Decode body
             binary_data = base64.b64decode(event["body"])

@@ -26,8 +26,6 @@ RUN python3 waf configure --build-static --with-python --with-examples --with-va
 RUN python3 waf && python3 waf install
 
 
-
-
 FROM ubuntu:22.04
 
 ARG FUNCTION_DIR
