@@ -10,6 +10,8 @@ import numpy as np
 
 def get_instruments(audio_bytes):
     '''Return the top n genres for a given audio'''
+    assert audio_bytes, "audio_bytes must not be empty"
+    assert isinstance(audio_bytes, bytes), "audio_bytes must be of type bytes"
     # Create mp3 audio
     audio_bytes = io.BytesIO(audio_bytes)
     audio = AudioSegment.from_file(audio_bytes, format="mp3")
@@ -48,6 +50,7 @@ def get_instruments(audio_bytes):
 
 def process_instruments(predictions, n):
     '''Return top n outputs from the function'''
+    assert n < len(predictions), 'N must be less than the number of predictions'
     output = dict(sorted(predictions.items(), key=lambda item: item[1], reverse=True)[:n])
 
     return output
@@ -121,50 +124,6 @@ labels =  [
         "violin",
         "voice"
     ]
-
-def get_genres(audio_bytes):
-    '''Return the top n genres for a given audio'''
-    # Create mp3 audio
-    audio_bytes = io.BytesIO(audio_bytes)
-    audio = AudioSegment.from_file(audio_bytes, format="mp3")
-    number_of_channels = audio.channels
-    sample_width = audio.sample_width
-    frame_rate = audio.frame_rate
-
-    # Use temp file to get around essentia disk only read , using wav to avoid loss from compression
-    temp_audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-    audio.export(temp_audio_file.name, format="wav")
-    # store temp file name
-    temp_file_path = temp_audio_file.name
-    temp_audio_file.close()
-
-    # load the audio
-    audio = es.MonoLoader(filename=temp_file_path, sampleRate=frame_rate, resampleQuality=4)()
-
-    # remove the temp file
-    os.remove(temp_audio_file.name)
-
-        
-    embedding_model = es.TensorflowPredictEffnetDiscogs(graphFilename="discogs-effnet-bs64-1.pb", output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-
-    model = es.TensorflowPredict2D(graphFilename="mtg_jamendo_instrument-discogs-effnet-1.pb", input="serving_default_model_Placeholder", output="PartitionedCall:0")
-    activations = model(embeddings)
-
-    # Why do we use mean
-    activations_mean = np.mean(activations, axis=0)
-
-
-    out = dict(zip(labels, activations_mean.tolist()))
-
-    return out
-
-
-def process_genres(predictions, n):
-    '''Return top n outputs from the function'''
-    output = dict(sorted(predictions.items(), key=lambda item: item[1], reverse=True)[:n])
-
-    return output
 
 def handler(event, context):
     try:

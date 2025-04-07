@@ -6,7 +6,7 @@ from status_check.lambda_function import get_current_time_utc
 from audio_time_stretch.lambda_function import time_stretch
 from audio_pitch_shift.lambda_function import pitch_shift
 from audio_genre.lambda_function import get_genres, process_genres
-from audio_instrument_detection.lambda_function import get_instruments
+from audio_instrument_detection.lambda_function import get_instruments, process_instruments
 from pydub.utils import mediainfo
 from base64 import b64encode
 import json
@@ -79,16 +79,20 @@ print(curr_time)
 
 
 # --- Audio Genres ---
-predictions = get_genres(audio)
-# for k,v in predictions.items():
-#     print(f'{k}: {v}')
+# predictions = get_genres(audio)
+# # for k,v in predictions.items():
+# #     print(f'{k}: {v}')
 
-out = process_genres(predictions, 5)
-for k,v in out.items():
-    print(f'{k}: {v}')
+# out = process_genres(predictions, 5)
+# for k,v in out.items():
+#     print(f'{k}: {v}')
 
 
 # ---  Audio Instrument Detection ---
-# predictions = get_instruments(audio)
+predictions = get_instruments(audio)
 # for k,v in predictions.items():
 #     print(f'{k}: {v}')
+
+out = process_instruments(predictions, 5)
+for k,v in out.items():
+    print(f'{k}:{v}')
