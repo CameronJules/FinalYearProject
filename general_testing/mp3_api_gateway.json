@@ -13,7 +13,8 @@
     },
     "queryStringParameters": {
       "shift_amount": 5,
-      "top_n": 5
+      "top_n": 5,
+      "stretch_amount" : 1.5
     },
     "requestContext": {
       "accountId": "123456789012",

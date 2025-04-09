@@ -49,7 +49,7 @@ def log(message,type):
 def stretch(sound_array, f, window_size, h):
     """ 
     Stretches the sound by a factor `f`
-    https://zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-in-python/
+    https://zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-stretching-in-python/
 
     """
     if len(sound_array.shape) == 2:  # Stereo signal
@@ -123,11 +123,11 @@ def lambda_handler(event, context):
                 "statusCode": 422,
                 "body": json_dumps({"client error": "Missing query parameters - queryStringParameters: params_dict"})
             }
-        shift_amount = parameters.get("shift_amount", False) 
-        if not shift_amount:
+        stretch_amount = parameters.get("stretch_amount", False) 
+        if not stretch_amount:
             return {
                 "statusCode": 422,
-                "body": json_dumps({"client error": "Missing query parameters (shift_amount)"})
+                "body": json_dumps({"client error": "Missing query parameters (stretch_amount)"})
             }
         
         # Decode body
@@ -140,16 +140,21 @@ def lambda_handler(event, context):
                 "statusCode": 500,
                 "body": json_dumps({"Decoding Error": str(e)})
             }
-        # Probably need something to validate the decoding
+        try:
+            stretch_amount = float(stretch_amount)
+        except Exception as e:
+            return {
+                "statusCode": 422,
+                "body": {
+                    "Stretch amount invalid": str(e),}
+            }
 
         # Run duration function
         log("lambda_handler: Running time stretch", "INFO")
         try:
-            shift_amount = float(shift_amount)
-            altered_audio = time_stretch(binary_data,shift_amount)
+            altered_audio = time_stretch(binary_data,stretch_amount)
         except Exception as e:
             log(f"lambda_handler: Stretch function failed: {str(e)}", "ERROR")
-            print(f"\n Binary data: {binary_data[:10]}")
             return {
                 "statusCode": 500,
                 "body": {
