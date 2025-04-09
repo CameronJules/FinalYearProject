@@ -85,6 +85,9 @@ def np_pitchshift(snd_array, n, window_size=2**13, h=2**11):
     return speedx(stretched[window_size:], factor)
 
 def pitch_shift(audio_bytes, shift_amount):
+    assert audio_bytes, "audio_bytes must not be empty"
+    assert isinstance(audio_bytes, bytes), "audio_bytes must be of type bytes"
+    assert isinstance(shift_amount, float), "shift_amount must be of type float"
     '''
     shift pitch by n semitones
     https://batulaiko.medium.com/how-to-pitch-shift-in-python-c59b53a84b6d
@@ -153,14 +156,21 @@ def lambda_handler(event, context):
             log(f"lambda_handler: Base64 decoding failed: {str(e)}", "ERROR")
             return {
                 "statusCode": 500,
-                "body": json_dumps({"Decoding Error": str(e)})
+                "body": json_dumps({"error, decoding or duration function failed": str(e)})
             }
         # Probably need something to validate the decoding
 
         # Run duration function
-        log("lambda_handler: Running pitch shift", "INFO")
         try:
             shift_amount = float(shift_amount)
+        except Exception as e:
+            return {
+                "statusCode": 422,
+                "body": {
+                    "Shift amount invalid": str(e),}
+            }
+        log("lambda_handler: Running pitch shift", "INFO")
+        try:
             altered_audio = pitch_shift(binary_data,shift_amount)
         except Exception as e:
             log(f"lambda_handler: Pitch function failed: {str(e)}", "ERROR")

@@ -4,7 +4,6 @@ import json
 from lambda_function import handler, get_genres, process_genres
 
 class TestAudioGenre(unittest.TestCase):
-    pass
     # --- Testing For Get Genres Function ---
     def test_get_genres_valid_audio(self):
         '''Test with valid audio bytes'''

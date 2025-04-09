@@ -89,10 +89,19 @@ print(curr_time)
 
 
 # ---  Audio Instrument Detection ---
-predictions = get_instruments(audio)
-# for k,v in predictions.items():
-#     print(f'{k}: {v}')
+# predictions = get_instruments(audio)
+# # for k,v in predictions.items():
+# #     print(f'{k}: {v}')
 
-out = process_instruments(predictions, 5)
-for k,v in out.items():
-    print(f'{k}:{v}')
+# out = process_instruments(predictions, 5)
+# for k,v in out.items():
+#     print(f'{k}:{v}')
+
+duration = 5
+rate = 44100
+# generate time axis
+t = np.linspace(0, duration, int(rate * duration))
+print(t)
+frequency = 440 # A note
+note = np.sin(frequency * t)
+print(note)
