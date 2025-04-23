@@ -156,7 +156,7 @@ def lambda_handler(event, context):
             log(f"lambda_handler: Base64 decoding failed: {str(e)}", "ERROR")
             return {
                 "statusCode": 500,
-                "body": json_dumps({"error, decoding or duration function failed": str(e)})
+                "body": json_dumps({"error, decoding or pitch function failed": str(e)})
             }
         # Probably need something to validate the decoding
 

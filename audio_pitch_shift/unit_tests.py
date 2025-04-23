@@ -117,7 +117,7 @@ class TestPitchShift(unittest.TestCase):
 
         expected_output = {
             'statusCode' : 500,
-            'body' : "error, decoding or duration function failed"
+            'body' : "error, decoding or pitch function failed"
         }
 
         payload = {

@@ -8,7 +8,7 @@ from audio_pitch_shift.lambda_function import pitch_shift
 from audio_genre.lambda_function import get_genres, process_genres
 from audio_instrument_detection.lambda_function import get_instruments, process_instruments
 from pydub.utils import mediainfo
-from base64 import b64encode
+from base64 import b64encode, b64decode
 import json
 
 
@@ -19,15 +19,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# file = '9353__guitarz1970__tinsing-1 copy.mp3'
-# audio = open(f'./music_files/{file}', 'rb').read()
-
-
-# Use this one - CD into the directory of the function first i.e. /audio_genre
-file = 'tinsing.mp3'
+file = "tinsing.mp3"
 audio = open(f'../music_files/{file}', 'rb').read()
+# bytes_in = io.BytesIO(audio)
+# song = AudioSegment.from_file(bytes_in, format='mp3')
+# play(song)
+
+# file = 'tinsing copy.mp3'
+# audio = open(f'../music_files/{file}', 'rb').read()
 # bytes = io.BytesIO(audio)
 # song = AudioSegment.from_file(bytes, format='mp3')
+# # Export trimed song 
+# trim_amnt = 4
+# export_song = song[:(len(song)//trim_amnt)]
+# export_song.export("../music_files/tinsing-4s.mp3", format="mp3")
 # # play(song)
 
 
@@ -59,9 +64,6 @@ print(curr_time)
 # --- Audio Time Stretch ---
 
 # bytes = time_stretch(audio, 5)
-# encoded = b64encode(bytes).decode("utf-8")
-# with open("./short_out.json", "w") as json_file:
-#     json.dump(encoded, json_file, indent=4)
 # bytes = io.BytesIO(bytes)
 # song = AudioSegment.from_file(bytes, format="mp3")
 # play(song)
@@ -97,11 +99,16 @@ print(curr_time)
 # for k,v in out.items():
 #     print(f'{k}:{v}')
 
-duration = 5
-rate = 44100
-# generate time axis
-t = np.linspace(0, duration, int(rate * duration))
-print(t)
-frequency = 440 # A note
-note = np.sin(frequency * t)
-print(note)
+
+# print(note)
+
+# print(audio[:10])
+
+# bytes = pitch_shift(audio, 6.0)
+# print(bytes[:10])
+# bytes = io.BytesIO(bytes)
+# print(bytes.getvalue()[:10])
+bytes = time_stretch(audio, 2)
+bytes = io.BytesIO(bytes)
+song = AudioSegment.from_file(bytes, format='mp3')
+play(song)
