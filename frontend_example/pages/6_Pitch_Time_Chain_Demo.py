@@ -3,17 +3,13 @@ import requests
 from base64 import b64decode, b64encode
 from io import BytesIO
 import json
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
-api_key = os.environ.get('API_KEY')
+
 
 url = "https://5vawmc8ccc.execute-api.eu-west-1.amazonaws.com/dev/pitch-time-chain"
 headers = {
-    'isBase64Encoded': 'true',
-    'Content-Type': 'application/json',
-    'x-api-key': api_key
+    'Content-Type':'application/json',
+    'x-api-key': '3borWufDVg8UWfjFLBV3E6iZ8UQpvehzecMkAY06'
 }
 
 
@@ -99,8 +95,6 @@ def generate_page(url, headers):
                     st.warning(f"Status Code: {response.status_code}")
 
                 if response.status_code == 200:
-                    # Convert response back to audio
-                    print(response.text)
                     response = json.loads(response.text)
                     st.json(response)
                     binary_data = b64decode(response["body"])

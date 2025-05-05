@@ -35,7 +35,7 @@ def generate_page():
 
     # File upload
     with st.container(height=200):
-        uploaded_file = st.file_uploader(label="Upload MP3 file here", type="mp3")
+        uploaded_file = st.file_uploader(label="Upload MP3 file here")
 
     # Genereate rest of the page once file is uploaded
     if uploaded_file is not None:
